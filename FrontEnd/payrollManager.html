@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payroll Management</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 class="mb-4">Payroll Management</h2>
+    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#payrollModal">Add Payroll</button>
+
+    <table class="table table-striped" id="payrollTable">
+        <thead>
+        <tr>
+            <th>Employee ID</th>
+            <th>Name</th>
+            <th>Salary</th>
+            <th>Bonus</th>
+            <th>Deductions</th>
+            <th>Net Pay</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr data-id="1" data-name="John Doe" data-salary="5000" data-bonus="500" data-deductions="200">
+            <td>1</td>
+            <td>John Doe</td>
+            <td>$5000</td>
+            <td>$500</td>
+            <td>$200</td>
+            <td>$5300</td>
+            <td>
+                <button class="btn btn-warning btn-sm edit-btn">Edit</button>
+                <button class="btn btn-danger btn-sm delete-btn">Delete</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="modal fade" id="payrollModal" tabindex="-1" aria-labelledby="payrollModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="payrollModalLabel">Add Payroll</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="payrollForm">
+                    <input type="hidden" id="employeeId">
+                    <div class="mb-3">
+                        <label for="employeeName" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="employeeName" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="salary" class="form-label">Salary</label>
+                        <input type="number" class="form-control" id="salary">
+                    </div>
+                    <div class="mb-3">
+                        <label for="bonus" class="form-label">Bonus</label>
+                        <input type="number" class="form-control" id="bonus">
+                    </div>
+                    <div class="mb-3">
+                        <label for="deductions" class="form-label">Deductions</label>
+                        <input type="number" class="form-control" id="deductions">
+                    </div>
+                    <div class="mb-3">
+                        <label for="netPay" class="form-label">Net Pay</label>
+                        <input type="text" class="form-control" id="netPay" readonly>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        function calculateNetPay() {
+            let salary = parseFloat($("#salary").val()) || 0;
+            let bonus = parseFloat($("#bonus").val()) || 0;
+            let deductions = parseFloat($("#deductions").val()) || 0;
+            let netPay = salary + bonus - deductions;
+            $("#netPay").val(`$${netPay}`);
+        }
+
+        $("#salary, #bonus, #deductions").on("input", calculateNetPay);
+
+        $("#payrollTable tbody").on("click", ".edit-btn", function() {
+            let row = $(this).closest("tr");
+            $("#employeeId").val(row.data("id"));
+            $("#employeeName").val(row.data("name"));
+            $("#salary").val(row.data("salary"));
+            $("#bonus").val(row.data("bonus"));
+            $("#deductions").val(row.data("deductions"));
+            calculateNetPay();
+            $("#payrollModal").modal("show");
+        });
+
+        $("#payrollForm").submit(function(e) {
+            e.preventDefault();
+            let id = $("#employeeId").val();
+            let name = $("#employeeName").val();
+            let salary = $("#salary").val();
+            let bonus = $("#bonus").val();
+            let deductions = $("#deductions").val();
+            let netPay = salary - deductions + parseFloat(bonus);
+
+            let row = $("#payrollTable tbody").find(`tr[data-id='${id}']`);
+            if (row.length > 0) {
+                row.data("salary", salary);
+                row.data("bonus", bonus);
+                row.data("deductions", deductions);
+                row.find("td:eq(2)").text(`$${salary}`);
+                row.find("td:eq(3)").text(`$${bonus}`);
+                row.find("td:eq(4)").text(`$${deductions}`);
+                row.find("td:eq(5)").text(`$${netPay}`);
+            }
+
+            $("#payrollModal").modal("hide");
+        });
+    });
+</script>
+</body>
+</html>

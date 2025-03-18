@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMS Dashboard</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            display: flex;
+        }
+        #sidebar {
+            width: 250px;
+            height: 100vh;
+            background: #343a40;
+            padding: 15px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            overflow-y: auto;
+        }
+        #sidebar .nav-link {
+            color: white;
+            padding: 10px;
+            display: block;
+        }
+        #sidebar .nav-link:hover {
+            background: #495057;
+            border-radius: 5px;
+        }
+        #content {
+            margin-left: 260px;
+            padding: 20px;
+            flex-grow: 1;
+        }
+    </style>
+</head>
+<body>
+<div id="sidebar">
+    <h3 class="text-white">EMS</h3>
+    <ul class="nav flex-column">
+        <li class="nav-item"><a class="nav-link" href="admindash.html">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="employeeManager.html">Employees</a></li>
+        <li class="nav-item"><a class="nav-link" href="attendanceManage.html">Attendance</a></li>
+        <li class="nav-item"><a class="nav-link" href="payrollManager.html">Payroll</a></li>
+        <li class="nav-item"><a class="nav-link" href="performanceManagement.html">Performance</a></li>
+        <li class="nav-item"><a class="nav-link" href="reportManage.html">Reports</a></li>
+    </ul>
+</div>
+
+<div id="content">
+    <h2>Employee Management</h2>
+    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#employeeModal">Add Employee</button>
+
+    <table class="table table-striped" id="employeeTable">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Department</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr data-id="1" data-name="John Doe" data-email="johndoe@example.com" data-department="HR">
+            <td>1</td>
+            <td>John Doe</td>
+            <td>johndoe@example.com</td>
+            <td>HR</td>
+            <td>
+                <button class="btn btn-warning btn-sm edit-btn">Edit</button>
+                <button class="btn btn-danger btn-sm delete-btn">Delete</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="modal fade" id="employeeModal" tabindex="-1" aria-labelledby="employeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="employeeModalLabel">Add Employee</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="employeeForm">
+                    <input type="hidden" id="employeeId">
+                    <div class="mb-3">
+                        <label for="employeeName" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="employeeName">
+                    </div>
+                    <div class="mb-3">
+                        <label for="employeeEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="employeeEmail">
+                    </div>
+                    <div class="mb-3">
+                        <label for="employeeDepartment" class="form-label">Department</label>
+                        <input type="text" class="form-control" id="employeeDepartment">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $("#employeeTable tbody").on("click", ".edit-btn", function() {
+            let row = $(this).closest("tr");
+            $("#employeeId").val(row.data("id"));
+            $("#employeeName").val(row.data("name"));
+            $("#employeeEmail").val(row.data("email"));
+            $("#employeeDepartment").val(row.data("department"));
+
+            $("#employeeModalLabel").text("Edit Employee");
+            $("#employeeModal").modal("show");
+        });
+
+        $("#employeeForm").submit(function(e) {
+            e.preventDefault();
+            let id = $("#employeeId").val();
+            let name = $("#employeeName").val();
+            let email = $("#employeeEmail").val();
+            let department = $("#employeeDepartment").val();
+
+            let row = $("#employeeTable tbody").find(`tr[data-id='${id}']`);
+            if (row.length > 0) {
+                row.data("name", name);
+                row.data("email", email);
+                row.data("department", department);
+                row.find("td:eq(1)").text(name);
+                row.find("td:eq(2)").text(email);
+                row.find("td:eq(3)").text(department);
+            }
+
+            $("#employeeModal").modal("hide");
+        });
+    });
+</script>
+</body>
+</html>
